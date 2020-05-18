@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Models\ContextComparer.cs" />
     <Compile Include="Models\IModel.cs" />
+    <Compile Include="Models\MatchModel.cs" />
     <Compile Include="Models\NonStationaryPpmModel.cs" />
     <Compile Include="Models\PartialNonStationaryPpmModel.cs" />
     <Compile Include="Paq1.cs" />

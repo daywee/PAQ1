@@ -11,7 +11,8 @@ namespace Paq1.Core
         {
             _models = new List<IModel>
             {
-                new NonStationaryPpmModel(8)
+                new NonStationaryPpmModel(8),
+                new MatchModel(),
             };
         }
 
