@@ -16,7 +16,7 @@ namespace Paq1.Tests
             var source = ReadBits(RootFolder + "paq1description.txt");
 
             var paq = new Core.Paq1();
-            var compressed = paq.Compress(source);
+            var compressed = paq.Compress(source); // 1155
 
             var dpaq = new Core.Paq1();
             var decompressed = dpaq.Decompress(compressed, source.Count);
@@ -56,7 +56,7 @@ namespace Paq1.Tests
             var source = ReadBits(RootFolder + "lipsumLarge.txt");
 
             var paq = new Core.Paq1();
-            var compressed = paq.Compress(source); // 530986
+            var compressed = paq.Compress(source); // 530986 // 135080
 
             var dpaq = new Core.Paq1();
             var decompressed = dpaq.Decompress(compressed, source.Count);

@@ -16,6 +16,7 @@ namespace Paq1.Core.Models
             _context[order] = 1; // first bit serves as a mark of byte completeness
         }
 
+        // todo: weights should be additive
         public (int, int) Predict(int n0, int n1)
         {
             if (!_counters.ContainsKey(_context))

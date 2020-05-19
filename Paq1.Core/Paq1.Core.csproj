@@ -46,6 +46,7 @@
     <Compile Include="Models\MatchModel.cs" />
     <Compile Include="Models\NonStationaryPpmModel.cs" />
     <Compile Include="Models\PartialNonStationaryPpmModel.cs" />
+    <Compile Include="Models\WordModel.cs" />
     <Compile Include="Paq1.cs" />
     <Compile Include="Predictor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
