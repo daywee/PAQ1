@@ -19,10 +19,6 @@ namespace Paq1.Core.Models
         private uint partialByteHash = 1;
         private uint previousByte;
 
-        public WordModel()
-        {
-        }
-
         public (int, int) Predict(int n0, int n1)
         {
             if (!counter0.ContainsKey(context0))

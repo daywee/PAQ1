@@ -14,6 +14,7 @@ namespace Paq1.Core
                 new NonStationaryPpmModel(8),
                 new MatchModel(),
                 new WordModel(),
+                new CyclicModel(),
             };
         }
 

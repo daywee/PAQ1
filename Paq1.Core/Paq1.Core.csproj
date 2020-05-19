@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\ContextComparer.cs" />
+    <Compile Include="Models\CyclicModel.cs" />
     <Compile Include="Models\IModel.cs" />
     <Compile Include="Models\MatchModel.cs" />
     <Compile Include="Models\NonStationaryPpmModel.cs" />

@@ -70,6 +70,26 @@ namespace Paq1.Tests
             }
         }
 
+        [TestMethod]
+        public void DecompressionOfTable()
+        {
+            var source = ReadBits(RootFolder + "data.csv");
+
+            var paq = new Core.Paq1();
+            var compressed = paq.Compress(source); // 557566
+
+            var dpaq = new Core.Paq1();
+            var decompressed = dpaq.Decompress(compressed, source.Count);
+
+            for (int i = 0; i < Math.Min(source.Count, decompressed.Count); i++)
+            {
+                if (source[i] != decompressed[i])
+                {
+                    Assert.Fail();
+                }
+            }
+        }
+
         private List<int> ReadBits(string path)
         {
             var bits = new List<int>();
