@@ -16,10 +16,10 @@ namespace Paq1.Tests
             string decompressed = Path.GetTempFileName();
 
             var paq = new Core.Paq1();
-            var originalSize = paq.Compress(source, compressed);
+            paq.Compress(source, compressed);
 
             paq = new Core.Paq1();
-            paq.Decompress(compressed, decompressed, originalSize);
+            paq.Decompress(compressed, decompressed);
 
             CompareFiles(source, decompressed);
 
@@ -35,10 +35,10 @@ namespace Paq1.Tests
             string decompressed = Path.GetTempFileName();
 
             var paq = new Core.Paq1();
-            var originalSize = paq.Compress(source, compressed);
+            paq.Compress(source, compressed);
 
             paq = new Core.Paq1();
-            paq.Decompress(compressed, decompressed, originalSize);
+            paq.Decompress(compressed, decompressed);
 
             CompareFiles(source, decompressed);
 
@@ -54,10 +54,10 @@ namespace Paq1.Tests
             string decompressed = Path.GetTempFileName();
 
             var paq = new Core.Paq1();
-            var originalSize = paq.Compress(source, compressed);
+            paq.Compress(source, compressed);
 
             paq = new Core.Paq1();
-            paq.Decompress(compressed, decompressed, originalSize);
+            paq.Decompress(compressed, decompressed);
 
             CompareFiles(source, decompressed);
 
@@ -73,10 +73,10 @@ namespace Paq1.Tests
             string decompressed = Path.GetTempFileName();
 
             var paq = new Core.Paq1();
-            var originalSize = paq.Compress(source, compressed);
+            paq.Compress(source, compressed);
 
             paq = new Core.Paq1();
-            paq.Decompress(compressed, decompressed, originalSize);
+            paq.Decompress(compressed, decompressed);
 
             CompareFiles(source, decompressed);
 

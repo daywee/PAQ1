@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 
 namespace Paq1.Core
@@ -49,7 +48,7 @@ namespace Paq1.Core
         /// <summary>
         /// Writes bit to file (MSB first).
         /// </summary>
-        /// <param name="bit">LSB of 'bit' is written.</param>
+        /// <param name="bit">A bit to write to the file. Only LSB of uint is written.</param>
         public void Write(uint bit)
         {
             if (!CanWrite)
@@ -68,9 +67,24 @@ namespace Paq1.Core
         }
 
         /// <summary>
+        /// Writes byte to file. Bit buffer must be empty.
+        /// </summary>
+        /// <param name="byte">A byte to write to the file.</param>
+        public void Write(byte @byte)
+        {
+            if (!CanWrite)
+                throw new NotSupportedException("Write not enabled.");
+
+            if (_bitsInBuffer > 0)
+                throw new NotSupportedException("Cannot write byte when buffer is not empty.");
+
+            _fileStream.WriteByte(@byte);
+        }
+
+        /// <summary>
         /// Reads next bit from file (MSB first).
         /// </summary>
-        /// <returns>Next bit or 0 bit when EOF.</returns>
+        /// <returns>Reads a bit from file. Will return 0 bit when EOF.</returns>
         public uint Read()
         {
             if (!CanRead)
@@ -94,6 +108,21 @@ namespace Paq1.Core
 
             _bitsInBuffer--;
             return (uint)((_buffer >> _bitsInBuffer) & 1);
+        }
+
+        /// <summary>
+        /// Reads next byte from file.
+        /// </summary>
+        public byte ReadByte()
+        {
+            var read = _fileStream.ReadByte();
+            if (read == -1)
+            {
+                IsEof = true;
+                return 0;
+            }
+
+            return (byte)read;
         }
 
         public void Dispose()
