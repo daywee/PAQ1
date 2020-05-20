@@ -1,6 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace Paq1.Tests
@@ -11,100 +9,97 @@ namespace Paq1.Tests
         private const string RootFolder = "../../TestData/";
 
         [TestMethod]
-        public void Decompression()
+        public void CanDecompressShortText()
         {
-            var source = ReadBits(RootFolder + "paq1description.txt");
+            string source = RootFolder + "paq1description.txt";
+            string compressed = Path.GetTempFileName();
+            string decompressed = Path.GetTempFileName();
 
             var paq = new Core.Paq1();
-            var compressed = paq.Compress(source); // 1155
+            var originalSize = paq.Compress(source, compressed);
 
-            var dpaq = new Core.Paq1();
-            var decompressed = dpaq.Decompress(compressed, source.Count);
+            paq = new Core.Paq1();
+            paq.Decompress(compressed, decompressed, originalSize);
 
-            for (int i = 0; i < Math.Min(source.Count, decompressed.Count); i++)
-            {
-                if (source[i] != decompressed[i])
-                {
-                    Assert.Fail();
-                }
-            }
+            CompareFiles(source, decompressed);
+
+            File.Delete(compressed);
+            File.Delete(decompressed);
         }
 
         [TestMethod]
-        public void DecompressionOfLongText()
+        public void CanDecompressText()
         {
-            var source = ReadBits(RootFolder + "lipsum.txt");
+            string source = RootFolder + "lipsum.txt";
+            string compressed = Path.GetTempFileName();
+            string decompressed = Path.GetTempFileName();
 
             var paq = new Core.Paq1();
-            var compressed = paq.Compress(source); // 134148
+            var originalSize = paq.Compress(source, compressed);
 
-            var dpaq = new Core.Paq1();
-            var decompressed = dpaq.Decompress(compressed, source.Count);
+            paq = new Core.Paq1();
+            paq.Decompress(compressed, decompressed, originalSize);
 
-            for (int i = 0; i < Math.Min(source.Count, decompressed.Count); i++)
-            {
-                if (source[i] != decompressed[i])
-                {
-                    Assert.Fail();
-                }
-            }
+            CompareFiles(source, decompressed);
+
+            File.Delete(compressed);
+            File.Delete(decompressed);
         }
 
         [TestMethod]
-        public void DecompressionOfVeryLongText()
+        public void CanDecompressLongText()
         {
-            var source = ReadBits(RootFolder + "lipsumLarge.txt");
+            string source = RootFolder + "lipsumLarge.txt";
+            string compressed = Path.GetTempFileName();
+            string decompressed = Path.GetTempFileName();
 
             var paq = new Core.Paq1();
-            var compressed = paq.Compress(source); // 530986 // 135080
+            var originalSize = paq.Compress(source, compressed);
 
-            var dpaq = new Core.Paq1();
-            var decompressed = dpaq.Decompress(compressed, source.Count);
+            paq = new Core.Paq1();
+            paq.Decompress(compressed, decompressed, originalSize);
 
-            for (int i = 0; i < Math.Min(source.Count, decompressed.Count); i++)
-            {
-                if (source[i] != decompressed[i])
-                {
-                    Assert.Fail();
-                }
-            }
+            CompareFiles(source, decompressed);
+
+            File.Delete(compressed);
+            File.Delete(decompressed);
         }
 
         [TestMethod]
-        public void DecompressionOfTable()
+        public void CanDecompressCsv()
         {
-            var source = ReadBits(RootFolder + "data.csv");
+            string source = RootFolder + "data.csv";
+            string compressed = Path.GetTempFileName();
+            string decompressed = Path.GetTempFileName();
 
             var paq = new Core.Paq1();
-            var compressed = paq.Compress(source); // 557566
+            var originalSize = paq.Compress(source, compressed);
 
-            var dpaq = new Core.Paq1();
-            var decompressed = dpaq.Decompress(compressed, source.Count);
+            paq = new Core.Paq1();
+            paq.Decompress(compressed, decompressed, originalSize);
 
-            for (int i = 0; i < Math.Min(source.Count, decompressed.Count); i++)
-            {
-                if (source[i] != decompressed[i])
-                {
-                    Assert.Fail();
-                }
-            }
+            CompareFiles(source, decompressed);
+
+            File.Delete(compressed);
+            File.Delete(decompressed);
         }
 
-        private List<int> ReadBits(string path)
+        private void CompareFiles(string path1, string path2)
         {
-            var bits = new List<int>();
-            var bytes = File.ReadAllBytes(path);
-
-            foreach (var b in bytes)
+            using (var f1 = File.OpenRead(path1))
+            using (var f2 = File.OpenRead(path2))
             {
-                for (var i = 7; i >= 0; i--)
+                if (f1.Length != f2.Length)
+                    Assert.Fail();
+
+                for (int i = 0; i < f1.Length; i++)
                 {
-                    var bit = (b >> i) & 1;
-                    bits.Add(bit);
+                    var b1 = f1.ReadByte();
+                    var b2 = f2.ReadByte();
+                    if (b1 != b2)
+                        Assert.Fail();
                 }
             }
-
-            return bits;
         }
     }
 }
