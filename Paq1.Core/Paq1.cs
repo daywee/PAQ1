@@ -11,7 +11,7 @@ namespace Paq1.Core
             using (var sourceFile = new BitFile(sourcePath, BitFileMode.Read))
             using (var targetFile = new BitFile(targetPath, BitFileMode.Write))
             {
-                EncodeHeader(targetFile, sourceFile.Length);
+                EncodeHeader(targetFile, sourceFile.LengthReal);
 
                 var predictor = new Predictor();
                 var encoder = new ArithmeticEncoder(targetFile);
@@ -40,7 +40,7 @@ namespace Paq1.Core
                 var predictor = new Predictor();
                 var decoder = new ArithmeticDecoder(sourceFile);
 
-                while (targetFile.Length < originalSize)
+                while (targetFile.LengthReal < originalSize)
                 {
                     double p0 = predictor.Predict();
                     var bit = decoder.Decode(p0);

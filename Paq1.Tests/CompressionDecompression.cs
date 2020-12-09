@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Diagnostics;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 
 namespace Paq1.Tests
@@ -34,11 +35,16 @@ namespace Paq1.Tests
             string compressed = Path.GetTempFileName();
             string decompressed = Path.GetTempFileName();
 
+            var sw1 = Stopwatch.StartNew();
             var paq = new Core.Paq1();
             paq.Compress(source, compressed);
+            sw1.Stop();
 
+            var sw2 = Stopwatch.StartNew();
             paq = new Core.Paq1();
             paq.Decompress(compressed, decompressed);
+            sw2.Stop();
+
 
             CompareFiles(source, decompressed);
 
@@ -72,11 +78,15 @@ namespace Paq1.Tests
             string compressed = Path.GetTempFileName();
             string decompressed = Path.GetTempFileName();
 
+            var sw1 = Stopwatch.StartNew();
             var paq = new Core.Paq1();
             paq.Compress(source, compressed);
+            sw1.Stop();
 
+            var sw2 = Stopwatch.StartNew();
             paq = new Core.Paq1();
             paq.Decompress(compressed, decompressed);
+            sw2.Stop();
 
             CompareFiles(source, decompressed);
 

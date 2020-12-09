@@ -25,6 +25,8 @@ namespace Paq1.Core
             }
         }
 
+        public long LengthReal { get; private set; }
+
         private readonly FileStream _fileStream;
         private byte _buffer;
         private int _bitsInBuffer;
@@ -36,9 +38,11 @@ namespace Paq1.Core
             {
                 case BitFileMode.Read:
                     _fileStream = File.OpenRead(path);
+                    LengthReal = _fileStream.Length * 8;
                     break;
                 case BitFileMode.Write:
                     _fileStream = new FileStream(path, System.IO.FileMode.Create);
+                    LengthReal = 0;
                     break;
                 default:
                     throw new InvalidEnumArgumentException(nameof(fileMode), (int)fileMode, typeof(BitFileMode));
@@ -53,6 +57,8 @@ namespace Paq1.Core
         {
             if (!CanWrite)
                 throw new NotSupportedException("Write not enabled.");
+
+            LengthReal++;
 
             bit &= 1; // ensure only LSB is used
 
