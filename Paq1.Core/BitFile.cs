@@ -19,30 +19,39 @@ namespace Paq1.Core
             get
             {
                 if (FileMode == BitFileMode.Read)
-                    return _fileStream.Length * 8;
+                    return _stream.Length * 8;
 
-                return _fileStream.Length * 8 + _bitsInBuffer;
+                return _stream.Length * 8 + _bitsInBuffer;
             }
         }
 
-        private readonly FileStream _fileStream;
+        private readonly Stream _stream;
         private byte _buffer;
         private int _bitsInBuffer;
+        private readonly bool _closeStreamOnDispose;
 
         public BitFile(string path, BitFileMode fileMode)
         {
             FileMode = fileMode;
+            _closeStreamOnDispose = true;
             switch (fileMode)
             {
                 case BitFileMode.Read:
-                    _fileStream = File.OpenRead(path);
+                    _stream = File.OpenRead(path);
                     break;
                 case BitFileMode.Write:
-                    _fileStream = new FileStream(path, System.IO.FileMode.Create);
+                    _stream = new FileStream(path, System.IO.FileMode.Create);
                     break;
                 default:
                     throw new InvalidEnumArgumentException(nameof(fileMode), (int)fileMode, typeof(BitFileMode));
             }
+        }
+
+        public BitFile(Stream stream, BitFileMode mode)
+        {
+            _stream = stream;
+            FileMode = mode;
+            _closeStreamOnDispose = false;
         }
 
         /// <summary>
@@ -61,7 +70,7 @@ namespace Paq1.Core
 
             if (_bitsInBuffer == 8)
             {
-                _fileStream.WriteByte(_buffer);
+                _stream.WriteByte(_buffer);
                 _bitsInBuffer = 0;
             }
         }
@@ -78,7 +87,7 @@ namespace Paq1.Core
             if (_bitsInBuffer > 0)
                 throw new NotSupportedException("Cannot write byte when buffer is not empty.");
 
-            _fileStream.WriteByte(@byte);
+            _stream.WriteByte(@byte);
         }
 
         /// <summary>
@@ -95,7 +104,7 @@ namespace Paq1.Core
 
             if (_bitsInBuffer == 0)
             {
-                var read = _fileStream.ReadByte();
+                var read = _stream.ReadByte();
                 if (read == -1)
                 {
                     IsEof = true;
@@ -115,7 +124,7 @@ namespace Paq1.Core
         /// </summary>
         public byte ReadByte()
         {
-            var read = _fileStream.ReadByte();
+            var read = _stream.ReadByte();
             if (read == -1)
             {
                 IsEof = true;
@@ -130,10 +139,10 @@ namespace Paq1.Core
             if (FileMode == BitFileMode.Write && _bitsInBuffer != 0)
             {
                 _buffer <<= 8 - _bitsInBuffer;
-                _fileStream.WriteByte(_buffer);
+                _stream.WriteByte(_buffer);
             }
-
-            _fileStream?.Dispose();
+            if (_closeStreamOnDispose)
+                _stream?.Dispose();
         }
     }
 

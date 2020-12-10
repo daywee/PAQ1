@@ -1,52 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Paq1.Core
 {
     public class Paq1
     {
+        public void Compress(Stream source, Stream target)
+        {
+            using (var sourceFile = new BitFile(source, BitFileMode.Read))
+            using (var targetFile = new BitFile(target, BitFileMode.Write))
+            {
+                Compress(sourceFile, targetFile);
+            }
+        }
+
         public void Compress(string sourcePath, string targetPath)
         {
             using (var sourceFile = new BitFile(sourcePath, BitFileMode.Read))
             using (var targetFile = new BitFile(targetPath, BitFileMode.Write))
             {
-                EncodeHeader(targetFile, sourceFile.Length);
+                Compress(sourceFile, targetFile);
+            }
+        }
 
-                var predictor = new Predictor();
-                var encoder = new ArithmeticEncoder(targetFile);
+        private void Compress(BitFile sourceFile, BitFile targetFile)
+        {
+            EncodeHeader(targetFile, sourceFile.Length);
 
-                while (!sourceFile.IsEof)
-                {
-                    var bit = sourceFile.Read();
-                    double p0 = predictor.Predict();
-                    // todo: remove casting
-                    encoder.Encode((int)bit, p0);
-                    predictor.Update((int)bit);
-                }
+            var predictor = new Predictor();
+            var encoder = new ArithmeticEncoder(targetFile);
 
-                encoder.EncodeRemainingBits();
+            while (!sourceFile.IsEof)
+            {
+                var bit = sourceFile.Read();
+                double p0 = predictor.Predict();
+                // todo: remove casting
+                encoder.Encode((int)bit, p0);
+                predictor.Update((int)bit);
+            }
+
+            encoder.EncodeRemainingBits();
+        }
+
+        public void Decompress(Stream source, Stream target)
+        {
+            using (var sourceFile = new BitFile(source, BitFileMode.Read))
+            using (var targetFile = new BitFile(target, BitFileMode.Write))
+            {
+                Decompress(sourceFile, targetFile);
             }
         }
 
         public void Decompress(string sourcePath, string targetPath)
         {
-
             using (var sourceFile = new BitFile(sourcePath, BitFileMode.Read))
             using (var targetFile = new BitFile(targetPath, BitFileMode.Write))
             {
-                long originalSize = DecodeHeader(sourceFile);
+                Decompress(sourceFile, targetFile);
+            }
+        }
 
-                var predictor = new Predictor();
-                var decoder = new ArithmeticDecoder(sourceFile);
+        private void Decompress(BitFile sourceFile, BitFile targetFile)
+        {
+            long originalSize = DecodeHeader(sourceFile);
 
-                while (targetFile.Length < originalSize)
-                {
-                    double p0 = predictor.Predict();
-                    var bit = decoder.Decode(p0);
-                    targetFile.Write(bit);
-                    predictor.Update((int)bit);
-                }
+            var predictor = new Predictor();
+            var decoder = new ArithmeticDecoder(sourceFile);
+
+            while (targetFile.Length < originalSize)
+            {
+                double p0 = predictor.Predict();
+                var bit = decoder.Decode(p0);
+                targetFile.Write(bit);
+                predictor.Update((int)bit);
             }
         }
 

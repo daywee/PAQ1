@@ -8,98 +8,44 @@ namespace Paq1.Tests
     {
         private const string RootFolder = "../../TestData/";
 
-        [TestMethod]
-        public void CanDecompressShortText()
+        [DataTestMethod]
+        [DataRow(RootFolder + "paq1description.txt")] // short text
+        [DataRow(RootFolder + "lipsum.txt")] // medium text
+        [DataRow(RootFolder + "lipsumLarge.txt")] // long text
+        [DataRow(RootFolder + "data.csv")] // tabular data
+        public void CanCompressAndDecompress(string dataPath)
         {
-            string source = RootFolder + "paq1description.txt";
-            string compressed = Path.GetTempFileName();
-            string decompressed = Path.GetTempFileName();
+            var source = File.OpenRead(dataPath);
+            var compressed = new MemoryStream();
+            var decompressed = new MemoryStream();
 
             var paq = new Core.Paq1();
             paq.Compress(source, compressed);
 
-            paq = new Core.Paq1();
-            paq.Decompress(compressed, decompressed);
-
-            CompareFiles(source, decompressed);
-
-            File.Delete(compressed);
-            File.Delete(decompressed);
-        }
-
-        [TestMethod]
-        public void CanDecompressText()
-        {
-            string source = RootFolder + "lipsum.txt";
-            string compressed = Path.GetTempFileName();
-            string decompressed = Path.GetTempFileName();
-
-            var paq = new Core.Paq1();
-            paq.Compress(source, compressed);
+            compressed.Position = 0;
 
             paq = new Core.Paq1();
             paq.Decompress(compressed, decompressed);
 
-            CompareFiles(source, decompressed);
+            source.Position = 0;
+            decompressed.Position = 0;
 
-            File.Delete(compressed);
-            File.Delete(decompressed);
+            CompareStreams(source, decompressed);
         }
 
-        [TestMethod]
-        public void CanDecompressLongText()
+        private void CompareStreams(Stream first, Stream second)
         {
-            string source = RootFolder + "lipsumLarge.txt";
-            string compressed = Path.GetTempFileName();
-            string decompressed = Path.GetTempFileName();
+            if (first.Length != second.Length)
+                Assert.Fail();
 
-            var paq = new Core.Paq1();
-            paq.Compress(source, compressed);
-
-            paq = new Core.Paq1();
-            paq.Decompress(compressed, decompressed);
-
-            CompareFiles(source, decompressed);
-
-            File.Delete(compressed);
-            File.Delete(decompressed);
-        }
-
-        [TestMethod]
-        public void CanDecompressCsv()
-        {
-            string source = RootFolder + "data.csv";
-            string compressed = Path.GetTempFileName();
-            string decompressed = Path.GetTempFileName();
-
-            var paq = new Core.Paq1();
-            paq.Compress(source, compressed);
-
-            paq = new Core.Paq1();
-            paq.Decompress(compressed, decompressed);
-
-            CompareFiles(source, decompressed);
-
-            File.Delete(compressed);
-            File.Delete(decompressed);
-        }
-
-        private void CompareFiles(string path1, string path2)
-        {
-            using (var f1 = File.OpenRead(path1))
-            using (var f2 = File.OpenRead(path2))
+            for (int i = 0; i < first.Length; i++)
             {
-                if (f1.Length != f2.Length)
+                var b1 = first.ReadByte();
+                var b2 = second.ReadByte();
+                if (b1 != b2)
                     Assert.Fail();
-
-                for (int i = 0; i < f1.Length; i++)
-                {
-                    var b1 = f1.ReadByte();
-                    var b2 = f2.ReadByte();
-                    if (b1 != b2)
-                        Assert.Fail();
-                }
             }
+
         }
     }
 }
